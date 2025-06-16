@@ -11,23 +11,156 @@
             text-align: center;
         }
         .container {
-            margin-top: 50px;
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
         }
-        h1 {
-            color: #2c3e50;
+        .upload-area {
+            padding: 40px;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            background-color: #f9f9f9;
+        }
+        #file-input {
+            display: none;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Selamat Datang di StudyMate</h1>
-        <p>Aplikasi pembuat panduan belajar otomatis</p>
-        <p>Fitur yang akan datang:</p>
-        <ul style="list-style: none; padding: 0;">
-            <li>📄 Upload materi kuliah (PDF/DOCX/TXT)</li>
-            <li>🧠 Generate flashcard otomatis</li>
-            <li>📊 Buat mind map dari materi</li>
-        </ul>
+        <p>Unggah materi kuliah Anda (PDF/DOCX/TXT) untuk membuat panduan belajar otomatis</p>
+        
+        <div class="upload-area" id="drop-area">
+            <input type="file" id="file-input" accept=".pdf,.docx,.txt">
+            <button class="btn" id="upload-btn">Pilih File</button>
+            <p>atau tarik dan lepas file ke sini</p>
+            <p><small>Format yang didukung: PDF, DOCX, TXT (maks. 10MB)</small></p>
+        </div>
+        
+        <div id="status"></div>
     </div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+        const statusDiv = document.getElementById('status');
+
+        // Handle click on upload button
+        uploadBtn.addEventListener('click', () => fileInput.click());
+
+        // Handle file selection
+        fileInput.addEventListener('change', handleFiles);
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        // Handle dropped files
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight() {
+            dropArea.style.borderColor = '#4CAF50';
+            dropArea.style.backgroundColor = '#f0fff0';
+        }
+
+        function unhighlight() {
+            dropArea.style.borderColor = '#ccc';
+            dropArea.style.backgroundColor = '';
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles({ target: { files } });
+        }
+
+        function handleFiles(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                uploadFile(files[0]);
+            }
+        }
+
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Show uploading status
+            statusDiv.textContent = 'Mengunggah file...';
+            statusDiv.className = '';
+            statusDiv.style.display = 'block';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                statusDiv.textContent = 'File berhasil diupload: ' + data.filename;
+                statusDiv.className = 'success';
+                
+                // Reset file input
+                fileInput.value = '';
+                
+                // TODO: Handle response (e.g., show extracted text or next steps)
+                console.log('File uploaded:', data);
+            })
+            .catch(error => {
+                statusDiv.textContent = 'Error: ' + error.message;
+                statusDiv.className = 'error';
+                console.error('Error:', error);
+            });
+        }
+    </script>
 </body>
 </html>
