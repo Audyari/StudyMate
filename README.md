@@ -177,3 +177,19 @@ Materi: {text_input}
 - Generate 5-10 flashcards ✓
 - Display dengan flip animation ✓
 - Total waktu development: 2-3 minggu part-time
+
+## Update Progress Terbaru
+- **Task 2.1**: Setup Python environment selesai
+- **Task 2.2**: Buat file upload endpoint selesai
+- **Task 2.3**: Text extraction functions selesai
+- **Task 2.4**: Setup AI client selesai
+- **Task 2.5**: Design prompts Indonesia untuk flashcard selesai
+- **Task 2.6**: Buat template prompt Indonesia selesai
+- **Task 2.7**: Buat flashcard component selesai
+- **Task 2.8**: Connect everything selesai
+
+## Tambahan Informasi Prompt Engineering
+- **Prompt Engineering**: Proses mendesain prompt yang efektif untuk AI
+- **Prompt Template**: Template yang digunakan untuk membuat prompt
+- **Context-aware Prompts**: Prompts yang dapat menyesuaikan dengan konteks materi
+- **Output Formatting**: Format output yang dihasilkan oleh AI
